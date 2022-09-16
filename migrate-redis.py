@@ -28,7 +28,7 @@ from redis.exceptions import ResponseError
 @click.option('--flush', default=False, is_flag=True, help='Delete all keys from destination before migrating')
 def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport, db, flush):
     if srchost == dsthost:
-        print 'Source and destination must be different.'
+        print ('Source and destination must be different.')
         return
 
     source = redis.Redis(host=srchost, port=srchostport, db=db, password=srchostauth)
@@ -40,7 +40,7 @@ def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport
     size = source.dbsize()
 
     if size == 0:
-        print 'No keys found.'
+        print ('No keys found.')
         return
 
     progress_widgets = ['%d keys: ' % size, Percentage(), ' ', Bar(), ' ', ETA()]
@@ -78,7 +78,7 @@ def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport
                 if hasattr(e, 'message') and (e.message == 'BUSYKEY Target key name already exists.' or e.message == 'Target key name is busy.'):
                     already_existing += 1
                 else:
-                    print 'Key failed:', key, `data`, `result`
+                    print (f'Key failed:', {key}, {data}, {result})
                     raise e
 
         if cursor == 0:
@@ -88,8 +88,8 @@ def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport
         pbar.update(min(size, cnt))
 
     pbar.finish()
-    print 'Keys disappeared on source during scan:', non_existing
-    print 'Keys already existing on destination:', already_existing
+    print (f'Keys disappeared on source during scan:', non_existing)
+    print ('Keys already existing on destination:', already_existing)
 
 if __name__ == '__main__':
     migrate()
