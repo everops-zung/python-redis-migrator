@@ -113,6 +113,9 @@ OK
 "c9cd97e75ee5820996683688048b3f4307db9b7a"
 127.0.0.1:6379> 
 
+OR
+
+
 
 # Create the second cluster
 
@@ -203,3 +206,15 @@ python3 migrate-redis.py 172.18.0.2 p@55w0rD 6379 172.18.0.3 p@55w0rDX 6379
 
 python3 migrate-redis.py 172.18.0.2 p@55w0rD 6379 172.18.0.3 p@55w0rDX 6379
 No keys found.
+
+docker exec -it <container_hash> sh
+> python3 migrate-redis.py 172.18.0.4 p@55w0rD 6379 172.18.0.7 p@55w0rDX 6379
+Key failed: {b'mykey'} {b'\x00(c9cd97e75ee5820996683688048b3f4307db9b7a\n\x00\x98\xc2\xc4\xdeQ/\x15J'} {ResponseError('Invalid TTL value, must be >= 0')}--
+1 keys: 100% |##############################################################################################################################| Time: 0:00:00
+Keys disappeared on source during scan: 0
+Keys already existing on destination: 0
+
+# Helpful commands
+## Flush keys
+docker exec -it redis-2 sh  -c "redis-cli -a p@55w0rD flushall"
+redis-cli cluster nodes

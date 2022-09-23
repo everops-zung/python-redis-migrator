@@ -79,7 +79,8 @@ def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport
                     already_existing += 1
                 else:
                     print (f'Key failed:', {key}, {data}, {result})
-                    raise e
+                    # raise e
+                    pass
 
         if cursor == 0:
             break
