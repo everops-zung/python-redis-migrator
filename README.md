@@ -19,6 +19,13 @@ nodes:
 
 docker run -d -v $PWD/cluster-config.conf:/usr/local/etc/redis/redis.conf --name redis-x --net redis_cluster redis redis-server /usr/local/etc/redis/redis.conf
 
+# Inspect it's networking
+docker inspect -f '{{ (index .NetworkSettings.Networks "redis_cluster").IPAddress }}' redis-1
+172.18.0.2
+docker inspect -f '{{ (index .NetworkSettings.Networks "redis_cluster").IPAddress }}' redis-2
+172.18.0.3
+docker inspect -f '{{ (index .NetworkSettings.Networks "redis_cluster").IPAddress }}' redis-3
+172.18.0.4
 
 # Create the redis cluster:
 docker run -i --rm --net redis_cluster ruby sh -c '\\n gem install redis \\n && wget http://download.redis.io/redis-stable/src/redis-trib.rb \\n && ruby redis-trib.rb create --replicas 1 172.18.0.2:6379'
@@ -114,6 +121,22 @@ OK
 127.0.0.1:6379> 
 
 OR
+SET mykey1 "f52JAkUqsY/LXB4O" EX 43200
+SET mykey2 "PWM6Z8BwOqZXP0MG" EX 43200
+SET mykey3 "abzEjlLNmZIl6Pau" EX 43200
+SET mykey4 "m4GvS9eYOfxzbP7Y" EX 43200
+SET mykey5 "QOA8ntaVkxfr53/3" EX 43200
+SET mykey6 "3pVz1U1Z8og19E8y" EX 43200
+SET mykey7 "AaQHN+G7vE1swA2b" EX 43200
+SET mykey8 "FuoYa2AVOkGm28gi" EX 43200
+SET mykey9 "PDfpTmiWRBfOXOGI" EX 43200
+SET mykey10 "PcdDPLBn6vz2UcHZ" EX 43200
+SET mykey11 "xkMmyTwdjyirG23e" EX 43200
+SET mykey12 "yR+F98IdKzhrCRHw" EX 43200
+SET mykey13 "1oaGjqwT+Viq24Iz" EX 43200
+SET mykey14 "XZD4mtZ4yGJ9uDoE" EX 43200
+SET mykey15 "jCdKuTM10rhMrGs+" EX 43200
+SET mykey16 "Fn2hrj8RpAwJ8rSU" EX 43200
 
 
 
@@ -173,7 +196,9 @@ OK
 63d2134c1e2c535dd6331c25788b99835b9ce367 172.18.0.5:6379@16379 myself,master - 0 1663790964000 1 connected 0-5460
 f318528ac2cf2bf6abdcea341d8b6c4d67bf8beb 172.18.0.7:6379@16379 master - 0 1663790965764 3 connected 10923-16383
 
+# Prep the migrator
 
+source .venv/bin/activate
 Turn up ubuntu docker image and install dependencies:
 docker run -itd --network redis_cluster -v $PWD:/app -w /app ubuntu
 docker exec -it <container_hash_or_name> sh
@@ -198,9 +223,7 @@ redis==4.3.4
 wrapt==1.14.1
 
 
-
-
-python3 migrate-redis.py <srchost> <srcpassword> <srcport> <desthost> <destpassword> <destport>
+python3 migrate-redis.py srchost srcpassword srcport desthost destpassword destport
 
 python3 migrate-redis.py 172.18.0.2 p@55w0rD 6379 172.18.0.3 p@55w0rDX 6379
 
@@ -217,4 +240,5 @@ Keys already existing on destination: 0
 # Helpful commands
 ## Flush keys
 docker exec -it redis-2 sh  -c "redis-cli -a p@55w0rD flushall"
+
 redis-cli cluster nodes
