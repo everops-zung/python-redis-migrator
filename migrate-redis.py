@@ -26,7 +26,7 @@ from rediscluster import RedisCluster
 @click.argument('dsthostauth')
 @click.argument('dsthostport')
 @click.option('--source_startup_nodes', '-s', multiple = True, help='Redis source startup nodes')
-@click.option('--dest_startup_nodes', '-s', multiple = True, help='Redis dest startup nodes')
+@click.option('--dest_startup_nodes', '-d', multiple = True, help='Redis dest startup nodes')
 
 @click.option('--db', default=0, help='Redis db number, default 0')
 @click.option('--flush', default=False, is_flag=True, help='Delete all keys from destination before migrating')
