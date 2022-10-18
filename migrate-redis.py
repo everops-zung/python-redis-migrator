@@ -32,7 +32,7 @@ from rediscluster import RedisCluster
 @click.option('--flush', default=False, is_flag=True, help='Delete all keys from destination before migrating')
 @click.option('--cluster', default=False, is_flag=True, help='Delete all keys from destination before migrating')
 
-def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport, db, flush, cluster):
+def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport, source_startup_nodes, dest_startup_nodes, db, flush, cluster):
     if srchost == dsthost:
         print ('Source and destination must be different.')
         return
