@@ -37,8 +37,14 @@ def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport
         print ('Source and destination must be different.')
         return
     if (cluster):
-        source = RedisCluster(startup_nodes=source_startup_nodes, port=srchostport, db=db, password=srchostauth)
-        dest = RedisCluster(startup_nodes=dest_startup_nodes, port=dsthostport, db=db, password=dsthostauth)
+        s_nodes= []
+        d_nodes= []
+        for node in source_startup_nodes:
+            s_nodes.append( {"host": node, "port": str(srchostport) })
+        for node in destartup_nodes:
+            d_nodes.append( {"host": node, "port": str(dsthostport) })
+        source = RedisCluster(startup_nodes=s_nodes, password=srchostauth)
+        dest = RedisCluster(startup_nodes=d_nodes, password=dsthostauth)
     else:
         source = redis.Redis(host=srchost, port=srchostport, db=db, password=srchostauth)
         dest = redis.Redis(host=dsthost, port=dsthostport, db=db, password=dsthostauth)
