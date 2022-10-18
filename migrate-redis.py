@@ -16,6 +16,7 @@ from progressbar import ProgressBar
 from progressbar.widgets import Percentage, Bar, ETA
 import redis
 from redis.exceptions import ResponseError
+from rediscluster import RedisCluster
 
 @click.command()
 @click.argument('srchost')
@@ -24,15 +25,23 @@ from redis.exceptions import ResponseError
 @click.argument('dsthost')
 @click.argument('dsthostauth')
 @click.argument('dsthostport')
+@click.option('--source_startup_nodes', '-s', multiple = True help='Redis source startup nodes')
+@click.option('--dest_startup_nodes', '-s', multiple = True help='Redis dest startup nodes')
+
 @click.option('--db', default=0, help='Redis db number, default 0')
 @click.option('--flush', default=False, is_flag=True, help='Delete all keys from destination before migrating')
-def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport, db, flush):
+@click.option('--cluster', default=False, is_flag=True, help='Delete all keys from destination before migrating')
+
+def migrate(srchost, srchostauth, srchostport, dsthost, dsthostauth, dsthostport, db, flush, cluster):
     if srchost == dsthost:
         print ('Source and destination must be different.')
         return
-
-    source = redis.Redis(host=srchost, port=srchostport, db=db, password=srchostauth)
-    dest = redis.Redis(host=dsthost, port=dsthostport, db=db, password=dsthostauth)
+    if (cluster):
+        source = RedisCluster(startup_nodes=source_startup_nodes, port=srchostport, db=db, password=srchostauth)
+        dest = RedisCluster(startup_nodes=dest_startup_nodes, port=dsthostport, db=db, password=dsthostauth)
+    else:
+        source = redis.Redis(host=srchost, port=srchostport, db=db, password=srchostauth)
+        dest = redis.Redis(host=dsthost, port=dsthostport, db=db, password=dsthostauth)
 
     if flush:
         dest.flushdb()
